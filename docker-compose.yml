@@ -1,5 +1,18 @@
 version: '2'
 services:
+  nginx:
+    image: nginx:latest
+    container_name: webserver
+    volumes:
+      - ./nginx/:/etc/nginx/
+      - ./nginx/log/:/var/log/nginx/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+      - ./public/:/var/www/html/
+      - mailtrain-node-data:/var/www/mosaico/uploads
+      - mailtrain-node-data:/var/www/grapejs/uploads
+    ports:
+      - 80:80
+      - 443:443
   mysql:
     image: mysql:5.7
     environment:
@@ -13,7 +26,18 @@ services:
     image: redis:3.0
     volumes:
       - mailtrain-redis-data:/data
+  mailtrain-form-post-sidecar:
+    container_name: mailtrain_sidecar
+    image: registry.gitlab.com/mrman/mailtrain-form-post-sidecar:0.1.0 
+    environment:
+      - MAILTRAIN_API_KEY="your_api_key"
+      - MAILTRAIN_API_URL=http://mailtrain:3000/api
+      - MAILTRAIN_LIST_ID="your_list_id"
+      - MAILTRAIN_REQUIRE_CONFIRMATION=false
+    ports:
+      - 5000:5000
   mailtrain:
+    container_name: mailtrain
     image: mailtrain:latest
     depends_on:
       - mysql
