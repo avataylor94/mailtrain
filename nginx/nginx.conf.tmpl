@@ -25,12 +25,7 @@ http {
        # Allow access to public/static content 
        root /var/www;
        location / {
-             try_files /html/$uri /html/$uri/ =404;
-             }
-       # Allow access to public/static content 
-       root /var/www;
-       location / {
-             try_files /html/$uri /html/$uri/ =404;
+             try_files /html/$uri /html/$uri/ @backend; # Replace @backend with =404 to limit most of your site from the public
              }
        location ~ ^/(mosaico|grapejs) {
              try_files $request_uri $request_uri/ @backend;
